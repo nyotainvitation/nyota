@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nyota | Premium Wedding Experience</title>
+    
+    <!-- Fonts: Playfair Display (Headings) & Montserrat (Body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* --- CORE VARIABLES & BASICS --- */
+        :root {
+            --midnight: #050505;
+            --gold: #D4AF37;
+            --gold-dim: #8a7035;
+            --text-cream: #F5E6CA;
+            --glass-bg: rgba(255, 255, 255, 0.02);
+            --glass-border: rgba(212, 175, 55, 0.2);
+            --glass-shine: rgba(255, 255, 255, 0.05);
+        }
+
+        html {
+            color-scheme: dark; /* Forces native inputs (date, time) to dark mode */
+        }
+
+        body {
+            background-color: var(--midnight);
+            color: var(--text-cream);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, .serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* --- BACKGROUND ATMOSPHERE --- */
+        .bg-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* 1. Grain Texture */
+        .bg-grain {
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+            opacity: 0.4;
+            animation: grainMove 8s steps(10) infinite;
+        }
+
+        @keyframes grainMove {
+            0%, 100% { transform: translate(0, 0); }
+            10% { transform: translate(-5%, -5%); }
+            20% { transform: translate(-10%, 5%); }
+            30% { transform: translate(5%, -10%); }
+            40% { transform: translate(-5%, 15%); }
+            50% { transform: translate(-10%, 5%); }
+            60% { transform: translate(15%, 0); }
+            70% { transform: translate(0, 10%); }
+            80% { transform: translate(-15%, 0); }
+            90% { transform: translate(10%, 5%); }
+        }
+
+        /* 2. Palace Arch Glow (Radial) */
+        .bg-glow {
+            background: radial-gradient(circle at 50% 110%, rgba(20, 15, 5, 0.4) 0%, transparent 60%);
+        }
+
+        /* 3. Floating Particles */
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--gold);
+            border-radius: 50%;
+            opacity: 0;
+            animation: floatUp 15s infinite linear;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+            20% { opacity: 0.5; }
+            80% { opacity: 0.5; }
+            100% { transform: translateY(-10vh) translateX(20px); opacity: 0; }
+        }
+
+        /* --- INTRO ANIMATIONS --- */
+        .intro-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            text-align: center;
+            transition: all 1.5s ease-out;
+            padding: 0 20px;
+        }
+
+        .gold-line {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--gold), transparent);
+            width: 0%;
+            margin-bottom: 2rem;
+            animation: drawLine 2.5s ease-out forwards;
+        }
+
+        @keyframes drawLine {
+            0% { width: 0%; opacity: 0; }
+            50% { opacity: 1; }
+            100% { width: 60%; opacity: 0.6; }
+        }
+
+        .fade-text-1 {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInText 2s ease-out forwards;
+            animation-delay: 1s;
+        }
+
+        .fade-text-2 {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInText 2s ease-out forwards;
+            animation-delay: 3.5s; /* Appears after delay */
+        }
+
+        @keyframes fadeInText {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- GLASS CARDS --- */
+        .cards-wrapper {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease;
+            margin-top: 3rem;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        /* When selection is active, remove gap to prevent layout shifts */
+        .cards-wrapper.selection-active {
+            gap: 0;
+        }
+
+        .cards-wrapper.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            padding: 3rem 2rem;
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at top, var(--glass-shine), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(212, 175, 55, 0.6);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(212, 175, 55, 0.1);
+        }
+
+        .glass-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 1.5rem;
+            color: var(--gold);
+            transition: transform 0.5s ease;
+        }
+
+        .glass-card:hover .card-icon {
+            transform: scale(1.1);
+        }
+
+        .card-btn {
+            margin-top: 2rem;
+            padding: 0.8rem 1.5rem;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            background: transparent;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            opacity: 0.8;
+        }
+
+        .glass-card:hover .card-btn {
+            background: var(--gold);
+            color: #000;
+            opacity: 1;
+        }
+
+        /* --- INTERACTION STATES --- */
+        
+        /* Selected State for Card */
+        .glass-card.selected {
+            width: 100%;
+            /* UNIFIED WIDTH: Must match form-container max-width */
+            max-width: 800px; 
+            padding: 2.5rem 2rem; 
+            cursor: default;
+            transform: none;
+            
+            /* The visual merging magic */
+            border-bottom: 1px solid transparent; 
+            border-radius: 4px 4px 0 0;
+            background: rgba(10, 10, 10, 0.6); 
+            border-color: var(--gold-dim);
+            z-index: 20; 
+        }
+        
+        .glass-card.selected:hover {
+            box-shadow: none;
+            transform: none;
+        }
+
+        .glass-card.selected .card-btn {
+            display: none;
+        }
+
+        .glass-card.selected .card-desc {
+            display: none;
+        }
+
+        /* --- FORMS --- */
+        .form-container {
+            width: 100%;
+            /* UNIFIED WIDTH: Must match glass-card.selected max-width */
+            max-width: 800px; 
+            margin: 0 auto;
+            /* SEAMLESS MERGE FIX: Pull form up by 2px to overlap card border */
+            margin-top: -2px; 
+            background: rgba(10, 10, 10, 0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-color: var(--gold-dim);
+            border-top: none; /* No top border to complete the merge */
+            border-radius: 0 0 4px 4px;
+            padding: 3rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease;
+            display: none;
+            margin-bottom: 4rem;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .form-container.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .input-group {
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .input-field {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px 0;
+            color: var(--text-cream);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s;
+            border-radius: 0;
+        }
+
+        /* Date picker specific styling for dark mode */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1) sepia(100%) saturate(100%) hue-rotate(5deg) brightness(0.9);
+            cursor: pointer;
+            opacity: 0.6;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-bottom-color: var(--gold);
+        }
+
+        .input-label {
+            display: block;
+            font-family: 'Playfair Display', serif;
+            color: var(--gold-dim);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.5px;
+        }
+
+        select.input-field option {
+            background-color: #050505;
+            color: var(--text-cream);
+            padding: 10px;
+        }
+        
+        /* --- PLAN CARDS (New) --- */
+        .plan-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        .plan-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1.2rem;
+            background: linear-gradient(45deg, var(--gold-dim), var(--gold));
+            border: none;
+            color: #050505;
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            margin-top: 1rem;
+        }
+
+        .submit-btn:hover {
+            letter-spacing: 2px;
+            filter: brightness(1.1);
+        }
+        
+        .submit-btn:disabled {
+            background: #1a1a1a;
+            color: var(--gold);
+            cursor: default;
+            letter-spacing: 1px;
+        }
+
+        /* --- TYPEWRITER CURSOR --- */
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s step-end infinite;
+            color: var(--gold);
+            margin-left: 2px;
+        }
+        
+        @keyframes blink { 50% { opacity: 0; } }
+
+        /* --- RESPONSIVE UTILS --- */
+        .hidden { display: none !important; }
+        
+        /* Smoothly collapse hidden elements */
+        .invisible-soft { 
+            opacity: 0; 
+            pointer-events: none; 
+            height: 0; 
+            width: 0;
+            overflow: hidden; 
+            padding: 0; 
+            margin: 0;
+            border: none;
+        }
+
+        @media (max-width: 768px) {
+            .intro-container {
+                min-height: 50vh;
+                padding-top: 4rem;
+            }
+
+            .cards-wrapper {
+                flex-direction: column; /* Stack cards on mobile */
+                align-items: center;
+                padding: 0 1rem;
+                margin-top: 1rem;
+            }
+            
+            .glass-card {
+                width: 100%;
+                /* Let card fill width on mobile */
+                max-width: 100%;
+                padding: 1.5rem 1rem;
+            }
+
+            /* When selected on mobile, ensure full width matching form */
+            .glass-card.selected {
+                border-radius: 4px 4px 0 0;
+                padding: 1.5rem 1rem;
+                max-width: 100%;
+            }
+
+            .form-container {
+                padding: 2rem 1.5rem; /* Reduce padding on mobile */
+                max-width: 100%; /* reset max width for mobile */
+            }
+            
+            /* Ensure plan cards stack nicely */
+            .plan-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 { font-size: 1.5rem !important; }
+            h2 { font-size: 1.3rem !important; }
+            
+            .input-field {
+                font-size: 16px; /* Prevents zoom on iOS */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Background Layers -->
+    <div class="bg-layer bg-glow"></div>
+    <div class="bg-layer bg-grain"></div>
+    <div id="particles"></div>
+
+    <!-- BACK BUTTON -->
+    <button id="back-btn" onclick="goBack()" class="fixed top-6 left-6 text-amber-500/80 hover:text-amber-400 transition-all duration-500 z-50 flex items-center gap-2 group opacity-0 pointer-events-none">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transform group-hover:-translate-x-1 transition-transform">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        <span class="uppercase tracking-widest text-xs font-medium">Back</span>
+    </button>
+
+    <!-- Intro Sequence & Main Layout -->
+    <main class="min-h-screen flex flex-col items-center justify-center relative z-10 p-4 pb-12 w-full">
+        
+        <!-- Intro Text -->
+        <div id="intro" class="intro-container w-full max-w-4xl">
+            <div class="gold-line"></div>
+            
+            <h1 class="text-2xl md:text-4xl text-cream tracking-wide italic fade-text-1 mb-6">
+                “Every wedding begins with a request.”
+            </h1>
+            
+            <p class="text-sm md:text-base text-gray-400 tracking-widest uppercase fade-text-2">
+                How would you like to proceed?
+            </p>
+        </div>
+
+        <!-- Selection Cards -->
+        <div id="cards-container" class="cards-wrapper w-full">
+            
+            <!-- Card 1: Customer -->
+            <div id="card-customer" class="glass-card" onclick="handleSelection('customer')">
+                <div class="card-icon">
+                    <!-- Ring Icon SVG -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                        <circle cx="12" cy="11" r="3"></circle>
+                    </svg>
+                </div>
+                <h2 class="text-xl serif text-white mb-2">I am planning a wedding</h2>
+                <p class="text-sm text-gray-400 font-light card-desc">“I would like to create a Nyota for my celebration.”</p>
+                <button class="card-btn">Enter Wedding Inquiry</button>
+            </div>
+
+            <!-- Card 2: Partner -->
+            <div id="card-partner" class="glass-card" onclick="handleSelection('partner')">
+                <div class="card-icon">
+                    <!-- Handshake/Network Icon SVG -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="18" cy="5" r="3"></circle>
+                        <circle cx="6" cy="12" r="3"></circle>
+                        <circle cx="18" cy="19" r="3"></circle>
+                        <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                        <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                    </svg>
+                </div>
+                <h2 class="text-xl serif text-white mb-2">I want to collaborate</h2>
+                <p class="text-sm text-gray-400 font-light card-desc">“I am a wedding planner, photographer, or venue.”</p>
+                <button class="card-btn">Partner With Nyota</button>
+            </div>
+
+        </div>
+
+        <!-- CUSTOMER FORM CONTAINER -->
+        <div id="form-customer" class="form-container">
+            <!-- Content Wrapper (Hidden on success) -->
+            <div id="content-customer">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl serif text-white mb-2">Request Your Nyota</h2>
+                    <p class="text-gray-400 text-sm font-light">Tell us about your celebration.</p>
+                </div>
+
+                <form id="form-elem-customer" onsubmit="handleFormSubmit(event, 'btn-customer', 'customer')">
+                    <div class="input-group">
+                        <label class="input-label">Full Name</label>
+                        <!-- Added name="Name" -->
+                        <input type="text" name="Name" class="input-field" required placeholder="Enter your full name">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="input-group">
+                            <label class="input-label">Phone Number</label>
+                            <!-- Added name="Phone" -->
+                            <input type="tel" name="Phone" class="input-field" required placeholder="+1 (555) 000-0000">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Wedding Date</label>
+                            <!-- Added name="Date" -->
+                            <input type="date" name="Date" class="input-field">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="input-group">
+                            <label class="input-label">City of Wedding</label>
+                            <!-- Added name="City" -->
+                            <input type="text" name="City" class="input-field" required placeholder="City, Country">
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Number of Guests</label>
+                            <!-- Added name="Guests" -->
+                            <select name="Guests" class="input-field">
+                                <option>Under 150</option>
+                                <option>150–400</option>
+                                <option>400–800</option>
+                                <option>800+</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- NEW PRICING SECTION -->
+                    <div class="input-group">
+                        <label class="input-label">Preferred Experience</label>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 plan-grid">
+                            
+                            <!-- Plan 1 -->
+                            <label class="plan-card cursor-pointer relative p-5 rounded-lg">
+                                <input type="radio" name="Experience" value="Digital Nyota" class="peer sr-only">
+                                <div class="absolute inset-0 border-2 border-transparent peer-checked:border-amber-500 rounded-lg pointer-events-none transition-colors duration-300"></div>
+                                
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="w-2 h-2 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.5)]"></span>
+                                    <span class="font-serif text-lg text-white">Digital Nyota</span>
+                                </div>
+                                <p class="text-[9px] tracking-[0.15em] text-gray-400 uppercase mb-4 font-semibold">Perfect for Intimate Celebrations</p>
+                                <div class="mb-1">
+                                    <span class="text-xs text-gray-500 line-through decoration-gray-600">₹14,999</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-2xl font-bold text-amber-400">₹9,999</span>
+                                    <span class="text-[10px] text-gray-400 mt-1">(Founders Offer)</span>
+                                </div>
+                            </label>
+
+                            <!-- Plan 2 -->
+                            <label class="plan-card cursor-pointer relative p-5 rounded-lg">
+                                <input type="radio" name="Experience" value="Royal Nyota" class="peer sr-only">
+                                <div class="absolute inset-0 border-2 border-transparent peer-checked:border-amber-500 rounded-lg pointer-events-none transition-colors duration-300"></div>
+                                
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="w-2 h-2 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.5)]"></span>
+                                    <span class="font-serif text-lg text-white">Royal Nyota</span>
+                                </div>
+                                <p class="text-[9px] tracking-[0.15em] text-gray-400 uppercase mb-4 font-semibold">The Complete Guest Experience</p>
+                                <div class="mb-1">
+                                    <span class="text-xs text-gray-500 line-through decoration-gray-600">₹49,999</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-2xl font-bold text-amber-400">₹29,999</span>
+                                    <span class="text-[10px] text-gray-400 mt-1">(Most Chosen Plan)</span>
+                                </div>
+                            </label>
+
+                            <!-- Plan 3 -->
+                            <label class="plan-card cursor-pointer relative p-5 rounded-lg">
+                                <input type="radio" name="Experience" value="Imperial Nyota" class="peer sr-only">
+                                <div class="absolute inset-0 border-2 border-transparent peer-checked:border-amber-500 rounded-lg pointer-events-none transition-colors duration-300"></div>
+                                
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_8px_rgba(192,132,252,0.5)]"></span>
+                                    <span class="font-serif text-lg text-white">Imperial Nyota</span>
+                                </div>
+                                <p class="text-[9px] tracking-[0.15em] text-gray-400 uppercase mb-4 font-semibold">For Grand Wedding Legacies</p>
+                                <div class="mb-1">
+                                    <span class="text-xs text-gray-500 line-through decoration-gray-600">₹2,75,000</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-2xl font-bold text-amber-400">₹1,25,000</span>
+                                    <span class="text-[10px] text-gray-400 mt-1">(By Consultation)</span>
+                                </div>
+                            </label>
+
+                        </div>
+                        
+                        <!-- Not Sure Option -->
+                        <div class="mt-4 text-center">
+                            <label class="inline-flex items-center gap-2 cursor-pointer text-xs text-gray-400 hover:text-white transition-colors">
+                                <input type="radio" name="Experience" value="Not Sure" class="accent-amber-500">
+                                <span>I'm not sure yet, help me decide</span>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- END PRICING SECTION -->
+
+                    <div class="input-group">
+                        <label class="input-label">Message (Optional)</label>
+                        <!-- Added name="Message" -->
+                        <textarea name="Message" class="input-field" rows="2" placeholder="Tell us more about your vision..."></textarea>
+                    </div>
+
+                    <!-- Trust Signal -->
+                    <div class="text-xs text-gray-500 text-center mb-6 italic">
+                        <span class="text-amber-700/80 mr-1">🔒</span> Your wedding details are private and never shared.
+                    </div>
+
+                    <button id="btn-customer" type="submit" class="submit-btn">Request Availability</button>
+                </form>
+            </div>
+
+            <!-- SUCCESS MESSAGE (Hidden initially) -->
+            <div id="success-customer" class="hidden text-center py-10 transition-opacity duration-700 opacity-0">
+                <div class="text-4xl text-amber-500 mb-6 animate-pulse">✦</div>
+                <h3 class="text-3xl serif text-white mb-6">Thank You</h3>
+                <p id="typewriter-customer" class="text-gray-300 font-light text-lg leading-relaxed min-h-[80px] typing-cursor"></p>
+            </div>
+        </div>
+
+        <!-- PARTNER FORM CONTAINER -->
+        <div id="form-partner" class="form-container">
+            <!-- Content Wrapper -->
+            <div id="content-partner">
+                <div class="text-center mb-10">
+                    <h2 class="text-3xl serif text-white mb-2">Join the Nyota Network</h2>
+                    <p class="text-gray-400 text-sm font-light">We work with selected partners only.</p>
+                </div>
+
+                <form id="form-elem-partner" onsubmit="handleFormSubmit(event, 'btn-partner', 'partner')">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="input-group">
+                            <label class="input-label">Your Name</label>
+                            <input type="text" name="Name" class="input-field" required>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Business Name</label>
+                            <input type="text" name="Business" class="input-field" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Role</label>
+                        <select name="Role" class="input-field">
+                            <option>Wedding Planner</option>
+                            <option>Photographer</option>
+                            <option>Videographer</option>
+                            <option>Venue</option>
+                            <option>Decorator</option>
+                            <option>Invitation Designer</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="input-group">
+                            <label class="input-label">City</label>
+                            <input type="text" name="City" class="input-field" required>
+                        </div>
+                        <div class="input-group">
+                            <label class="input-label">Instagram or Website</label>
+                            <input type="text" name="Website" class="input-field">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Phone Number</label>
+                        <input type="tel" name="Phone" class="input-field" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Why do you want to collaborate?</label>
+                        <textarea name="Message" class="input-field" rows="3"></textarea>
+                    </div>
+
+                    <button id="btn-partner" type="submit" class="submit-btn">Apply for Partnership</button>
+                </form>
+            </div>
+
+            <!-- SUCCESS MESSAGE (Hidden initially) -->
+            <div id="success-partner" class="hidden text-center py-10 transition-opacity duration-700 opacity-0">
+                <div class="text-4xl text-amber-500 mb-6 animate-pulse">✦</div>
+                <h3 class="text-3xl serif text-white mb-6">Application Received</h3>
+                <p id="typewriter-partner" class="text-gray-300 font-light text-lg leading-relaxed min-h-[80px] typing-cursor"></p>
+            </div>
+        </div>
+
+        <!-- Scarcity Footer -->
+        <footer class="mt-8 text-center pb-8 opacity-60 text-xs tracking-widest text-amber-100/50 uppercase">
+            Nyota accepts a limited number of weddings each month to maintain quality.
+        </footer>
+
+    </main>
+
+    <script>
+        // --- 1. CONFIGURATION ---
+        // PASTE YOUR GOOGLE SHEET WEB APP URL HERE
+        const SCRIPT_URL = 'YOUR_GOOGLE_SCRIPT_URL_HERE';
+
+        // --- 2. PARTICLE SYSTEM ---
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 20;
+
+            for (let i = 0; i < particleCount; i++) {
+                const p = document.createElement('div');
+                p.classList.add('particle');
+                p.style.left = Math.random() * 100 + 'vw';
+                p.style.animationDelay = (Math.random() * 10) + 's';
+                p.style.opacity = Math.random() * 0.5;
+                container.appendChild(p);
+            }
+        }
+
+        // --- 3. INTRO SEQUENCER ---
+        window.onload = function() {
+            createParticles();
+            
+            // Trigger cards fade in after text sequence
+            setTimeout(() => {
+                document.getElementById('cards-container').classList.add('visible');
+            }, 4500); // 4.5s delay based on CSS animation timings
+        };
+
+        // --- 4. SELECTION LOGIC ---
+        function handleSelection(type) {
+            const cardsContainer = document.getElementById('cards-container');
+            const intro = document.getElementById('intro');
+            
+            const cardCustomer = document.getElementById('card-customer');
+            const cardPartner = document.getElementById('card-partner');
+            
+            const formCustomer = document.getElementById('form-customer');
+            const formPartner = document.getElementById('form-partner');
+            
+            // Show Back Button
+            const backBtn = document.getElementById('back-btn');
+            backBtn.classList.remove('opacity-0', 'pointer-events-none');
+            backBtn.classList.add('opacity-100', 'pointer-events-auto');
+
+            // Move intro up and fade it slightly
+            intro.style.transform = 'translateY(-20px) scale(0.9)';
+            intro.style.opacity = '0.5';
+
+            // Reset layout for animation
+            cardsContainer.style.marginTop = '2rem';
+            cardsContainer.classList.add('selection-active'); // Removes gap for tighter fit
+            
+            if (type === 'customer') {
+                // Animate Cards
+                cardPartner.classList.add('invisible-soft');
+                cardCustomer.classList.add('selected');
+                
+                // Show Form
+                setTimeout(() => {
+                    formCustomer.classList.add('active');
+                    // Scroll slightly to ensure form is visible
+                    formCustomer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 400);
+
+            } else {
+                // Animate Cards
+                cardCustomer.classList.add('invisible-soft');
+                cardPartner.classList.add('selected');
+                
+                // Show Form
+                setTimeout(() => {
+                    formPartner.classList.add('active');
+                    formPartner.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 400);
+            }
+        }
+        
+        // --- 5. BACK BUTTON LOGIC ---
+        function goBack() {
+            // Hide Forms
+            document.getElementById('form-customer').classList.remove('active');
+            document.getElementById('form-partner').classList.remove('active');
+
+            // Reset Cards
+            const cards = document.querySelectorAll('.glass-card');
+            cards.forEach(card => {
+                card.classList.remove('selected');
+                card.classList.remove('invisible-soft');
+            });
+
+            // Reset Container
+            const container = document.getElementById('cards-container');
+            container.classList.remove('selection-active');
+            container.style.marginTop = '3rem'; // Reset margin
+
+            // Reset Intro
+            const intro = document.getElementById('intro');
+            intro.style.transform = '';
+            intro.style.opacity = '';
+
+            // Hide Back Button
+            const backBtn = document.getElementById('back-btn');
+            backBtn.classList.add('opacity-0', 'pointer-events-none');
+            backBtn.classList.remove('opacity-100', 'pointer-events-auto');
+
+            // --- RESET FORM STATES (Delay slightly to hide transition) ---
+            setTimeout(() => {
+                resetFormState('customer');
+                resetFormState('partner');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 500);
+        }
+
+        function resetFormState(type) {
+            // Show content, hide success
+            const content = document.getElementById(`content-${type}`);
+            const success = document.getElementById(`success-${type}`);
+            const form = document.getElementById(`form-elem-${type}`);
+            const btn = document.getElementById(`btn-${type}`);
+
+            content.classList.remove('hidden');
+            content.style.opacity = '1';
+            
+            success.classList.add('hidden');
+            success.classList.remove('opacity-100');
+            success.classList.add('opacity-0');
+
+            form.reset();
+            btn.innerHTML = type === 'customer' ? 'Request Availability' : 'Apply for Partnership';
+            btn.style.opacity = '1';
+        }
+
+        // --- 6. TYPEWRITER EFFECT ---
+        function typeWriter(elementId, text, speed = 40) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = "";
+            let i = 0;
+            
+            function type() {
+                if (i < text.length) {
+                    const char = text.charAt(i);
+                    if (char === '\n') {
+                        element.innerHTML += '<br/><br/>';
+                    } else {
+                        element.innerHTML += char;
+                    }
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            type();
+        }
+
+        // --- 7. FORM SUBMISSION (CONNECTS TO GOOGLE SHEETS) ---
+        function handleFormSubmit(e, btnId, type) {
+            e.preventDefault();
+            const form = document.getElementById(`form-elem-${type}`);
+            const btn = document.getElementById(btnId);
+            const contentDiv = document.getElementById(`content-${type}`);
+            const successDiv = document.getElementById(`success-${type}`);
+            
+            // Loading state
+            btn.innerHTML = '<span class="animate-pulse tracking-widest">CONNECTING TO NYOTA...</span>';
+            btn.style.opacity = '0.8';
+            btn.disabled = true;
+
+            // Prepare Data for Google Sheet
+            const formData = new FormData(form);
+            
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                // Success Sequence (Triggered regardless of opaque response)
+                runSuccessSequence(contentDiv, successDiv, type);
+            })
+            .catch(error => {
+                console.error('Error!', error.message);
+                btn.innerHTML = 'Connection Error. Please try again.';
+                btn.disabled = false;
+            });
+        }
+
+        function runSuccessSequence(contentDiv, successDiv, type) {
+             // 1. Fade out Form Content
+             contentDiv.style.transition = 'opacity 0.5s ease';
+             contentDiv.style.opacity = '0';
+             
+             setTimeout(() => {
+                 // 2. Hide Form / Show Success
+                 contentDiv.classList.add('hidden');
+                 successDiv.classList.remove('hidden');
+                 
+                 // Trigger reflow/animation
+                 setTimeout(() => {
+                     successDiv.classList.remove('opacity-0');
+                     successDiv.classList.add('opacity-100');
+                     
+                     // 3. Start Typewriter
+                     const msg = type === 'customer' 
+                         ? "Nyota has received your inquiry.\nWe are now aligning the stars for your celebration.\nOur concierge will contact you shortly."
+                         : "Nyota has received your portfolio.\nWe are reviewing your work with great interest.\nExpect a correspondence regarding potential partnership.";
+                     
+                     typeWriter(`typewriter-${type}`, msg);
+                 }, 100);
+
+             }, 500);
+        }
+    </script>
+</body>
+</html>
