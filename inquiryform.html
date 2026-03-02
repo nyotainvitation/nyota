@@ -8,7 +8,7 @@
     <!-- Fonts: Playfair Display (Headings) & Montserrat (Body) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -107,6 +107,14 @@
             transition: all 1.5s ease-out;
             padding: 0 20px;
         }
+        
+        /* Logo Animation */
+        .logo-container {
+            opacity: 0;
+            transform: translateY(10px);
+            animation: fadeInText 2s ease-out forwards;
+            animation-delay: 0.5s;
+        }
 
         .gold-line {
             height: 1px;
@@ -114,6 +122,7 @@
             width: 0%;
             margin-bottom: 2rem;
             animation: drawLine 2.5s ease-out forwards;
+            animation-delay: 1s; /* Start line draw after logo begins to fade in */
         }
 
         @keyframes drawLine {
@@ -126,7 +135,7 @@
             opacity: 0;
             transform: translateY(10px);
             animation: fadeInText 2s ease-out forwards;
-            animation-delay: 1s;
+            animation-delay: 1.5s; /* Adjusted timing */
         }
 
         .fade-text-2 {
@@ -469,6 +478,17 @@
         
         <!-- Intro Text -->
         <div id="intro" class="intro-container w-full max-w-4xl">
+            
+            <!-- NYOTA LOGO SECTION (NEW) -->
+            <div class="logo-container flex flex-col items-center mb-6">
+                <!-- Replace SVG with <img> tag if you have an image file -->
+                <svg xmlns="5.png" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-amber-500 mb-3">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    <circle cx="12" cy="11" r="3"></circle>
+                </svg>
+                <span class="tracking-[0.4em] text-white text-xl md:text-2xl font-light uppercase ml-2">Nyota</span>
+            </div>
+            
             <div class="gold-line"></div>
             
             <h1 class="text-2xl md:text-4xl text-cream tracking-wide italic fade-text-1 mb-6">
@@ -486,8 +506,8 @@
             <!-- Card 1: Customer -->
             <div id="card-customer" class="glass-card" onclick="handleSelection('customer')">
                 <div class="card-icon">
-                    <!-- Ring Icon SVG -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                    <!-- Shield/Crest Icon SVG to match reference -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                         <circle cx="12" cy="11" r="3"></circle>
                     </svg>
@@ -501,7 +521,7 @@
             <div id="card-partner" class="glass-card" onclick="handleSelection('partner')">
                 <div class="card-icon">
                     <!-- Handshake/Network Icon SVG -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="18" cy="5" r="3"></circle>
                         <circle cx="6" cy="12" r="3"></circle>
                         <circle cx="18" cy="19" r="3"></circle>
@@ -528,19 +548,16 @@
                 <form id="form-elem-customer" onsubmit="handleFormSubmit(event, 'btn-customer', 'customer')">
                     <div class="input-group">
                         <label class="input-label">Full Name</label>
-                        <!-- Added name="Name" -->
                         <input type="text" name="Name" class="input-field" required placeholder="Enter your full name">
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="input-group">
                             <label class="input-label">Phone Number</label>
-                            <!-- Added name="Phone" -->
                             <input type="tel" name="Phone" class="input-field" required placeholder="+1 (555) 000-0000">
                         </div>
                         <div class="input-group">
                             <label class="input-label">Wedding Date</label>
-                            <!-- Added name="Date" -->
                             <input type="date" name="Date" class="input-field">
                         </div>
                     </div>
@@ -548,12 +565,10 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="input-group">
                             <label class="input-label">City of Wedding</label>
-                            <!-- Added name="City" -->
                             <input type="text" name="City" class="input-field" required placeholder="City, Country">
                         </div>
                         <div class="input-group">
                             <label class="input-label">Number of Guests</label>
-                            <!-- Added name="Guests" -->
                             <select name="Guests" class="input-field">
                                 <option>Under 150</option>
                                 <option>150–400</option>
@@ -564,71 +579,92 @@
                     </div>
 
                     <!-- NEW PRICING SECTION -->
-                    <div class="input-group">
+                    <div class="input-group mt-8">
                         <label class="input-label">Preferred Experience</label>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 plan-grid">
                             
-                            <!-- Plan 1 -->
-                            <label class="plan-card cursor-pointer relative p-5 rounded-lg">
-                                <input type="radio" name="Experience" value="Digital Nyota" class="peer sr-only">
+                            <!-- Plan 1: Essential Nyota -->
+                            <label class="plan-card cursor-pointer relative p-5 rounded-lg flex flex-col h-full">
+                                <input type="radio" name="Experience" value="Essential Nyota" class="peer sr-only">
                                 <div class="absolute inset-0 border-2 border-transparent peer-checked:border-amber-500 rounded-lg pointer-events-none transition-colors duration-300"></div>
                                 
                                 <div class="flex items-center gap-2 mb-3">
                                     <span class="w-2 h-2 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.5)]"></span>
-                                    <span class="font-serif text-lg text-white">Digital Nyota</span>
+                                    <span class="font-serif text-lg text-white tracking-wide">Essential Nyota</span>
                                 </div>
                                 <p class="text-[9px] tracking-[0.15em] text-gray-400 uppercase mb-4 font-semibold">Perfect for Intimate Celebrations</p>
+                                
                                 <div class="mb-1">
-                                    <span class="text-xs text-gray-500 line-through decoration-gray-600">₹14,999</span>
+                                    <span class="text-xs text-gray-500 line-through decoration-gray-600 font-medium">₹14,999</span>
                                 </div>
-                                <div class="flex flex-col">
-                                    <span class="text-2xl font-bold text-amber-400">₹9,999</span>
-                                    <span class="text-[10px] text-gray-400 mt-1">(Founders Offer)</span>
+                                <div class="flex flex-col mb-4">
+                                    <span class="text-3xl font-bold text-amber-400 tracking-wide">FREE</span>
+                                    <div class="mt-2">
+                                        <span class="inline-block px-2 py-1 bg-[#2a2a2a] text-gray-200 text-[10px] rounded font-medium tracking-wide border border-gray-700">For First 3 Clients</span>
+                                    </div>
+                                    <span class="text-[10px] text-gray-500 mt-2 font-medium tracking-wide">Then ₹9,999 (Founders Offer)</span>
                                 </div>
+                                
+                                <p class="text-[11px] text-gray-400 mt-auto leading-relaxed">A modern replacement for printed cards. Share one elegant, private link with your guests.</p>
                             </label>
 
-                            <!-- Plan 2 -->
-                            <label class="plan-card cursor-pointer relative p-5 rounded-lg">
-                                <input type="radio" name="Experience" value="Royal Nyota" class="peer sr-only">
+                            <!-- Plan 2: Signature Nyota (Most Popular) -->
+                            <label class="plan-card cursor-pointer relative p-5 rounded-lg flex flex-col h-full">
+                                <input type="radio" name="Experience" value="Signature Nyota" class="peer sr-only">
                                 <div class="absolute inset-0 border-2 border-transparent peer-checked:border-amber-500 rounded-lg pointer-events-none transition-colors duration-300"></div>
                                 
+                                <!-- MOST POPULAR BADGE -->
+                                <div class="absolute -top-3 right-4 bg-amber-400 text-black text-[9px] font-bold px-2.5 py-1 rounded shadow-lg uppercase tracking-wider">Most Popular</div>
+                                
                                 <div class="flex items-center gap-2 mb-3">
-                                    <span class="w-2 h-2 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(96,165,250,0.5)]"></span>
-                                    <span class="font-serif text-lg text-white">Royal Nyota</span>
+                                    <span class="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.5)]"></span>
+                                    <span class="font-serif text-lg text-white tracking-wide">Signature Nyota</span>
                                 </div>
                                 <p class="text-[9px] tracking-[0.15em] text-gray-400 uppercase mb-4 font-semibold">The Complete Guest Experience</p>
+                                
                                 <div class="mb-1">
-                                    <span class="text-xs text-gray-500 line-through decoration-gray-600">₹49,999</span>
+                                    <span class="text-xs text-gray-500 line-through decoration-gray-600 font-medium">₹49,999</span>
                                 </div>
-                                <div class="flex flex-col">
-                                    <span class="text-2xl font-bold text-amber-400">₹29,999</span>
-                                    <span class="text-[10px] text-gray-400 mt-1">(Most Chosen Plan)</span>
+                                <div class="flex flex-col mb-4">
+                                    <span class="text-3xl font-bold text-amber-400 tracking-wide">₹28,499</span>
+                                    <div class="mt-2">
+                                        <span class="inline-block px-2 py-1 bg-amber-400/90 text-black text-[10px] rounded font-bold tracking-wide">Includes 5% Launch Discount</span>
+                                    </div>
+                                    <span class="text-[10px] text-gray-500 mt-2 font-medium tracking-wide">Normally ₹29,999</span>
                                 </div>
+                                
+                                <p class="text-[11px] text-gray-400 mt-auto leading-relaxed">A dedicated platform that removes coordination stress for your family.</p>
                             </label>
 
-                            <!-- Plan 3 -->
-                            <label class="plan-card cursor-pointer relative p-5 rounded-lg">
-                                <input type="radio" name="Experience" value="Imperial Nyota" class="peer sr-only">
+                            <!-- Plan 3: Maharaja Nyota -->
+                            <label class="plan-card cursor-pointer relative p-5 rounded-lg flex flex-col h-full">
+                                <input type="radio" name="Experience" value="Maharaja Nyota" class="peer sr-only">
                                 <div class="absolute inset-0 border-2 border-transparent peer-checked:border-amber-500 rounded-lg pointer-events-none transition-colors duration-300"></div>
                                 
                                 <div class="flex items-center gap-2 mb-3">
                                     <span class="w-2 h-2 rounded-full bg-purple-400 shadow-[0_0_8px_rgba(192,132,252,0.5)]"></span>
-                                    <span class="font-serif text-lg text-white">Imperial Nyota</span>
+                                    <span class="font-serif text-lg text-white tracking-wide">Maharaja Nyota</span>
                                 </div>
                                 <p class="text-[9px] tracking-[0.15em] text-gray-400 uppercase mb-4 font-semibold">For Grand Wedding Legacies</p>
+                                
                                 <div class="mb-1">
-                                    <span class="text-xs text-gray-500 line-through decoration-gray-600">₹2,75,000</span>
+                                    <span class="text-xs text-gray-500 line-through decoration-gray-600 font-medium">₹2,75,000</span>
                                 </div>
-                                <div class="flex flex-col">
-                                    <span class="text-2xl font-bold text-amber-400">₹1,25,000</span>
-                                    <span class="text-[10px] text-gray-400 mt-1">(By Consultation)</span>
+                                <div class="flex flex-col mb-4">
+                                    <span class="text-3xl font-bold text-amber-400 tracking-wide">₹1,12,500</span>
+                                    <div class="mt-2">
+                                        <span class="inline-block px-2 py-1 bg-[#2a2a2a] text-gray-200 text-[10px] rounded font-medium tracking-wide border border-gray-700">With 10% Launch Discount</span>
+                                    </div>
+                                    <span class="text-[10px] text-gray-500 mt-2 font-medium tracking-wide">Normally ₹1,25,000</span>
                                 </div>
+                                
+                                <p class="text-[11px] text-gray-400 mt-auto leading-relaxed">A permanent digital legacy for premium weddings. Custom-tailored with ultimate privacy and dedicated support.</p>
                             </label>
 
                         </div>
                         
                         <!-- Not Sure Option -->
-                        <div class="mt-4 text-center">
+                        <div class="mt-6 text-center">
                             <label class="inline-flex items-center gap-2 cursor-pointer text-xs text-gray-400 hover:text-white transition-colors">
                                 <input type="radio" name="Experience" value="Not Sure" class="accent-amber-500">
                                 <span>I'm not sure yet, help me decide</span>
@@ -639,7 +675,6 @@
 
                     <div class="input-group">
                         <label class="input-label">Message (Optional)</label>
-                        <!-- Added name="Message" -->
                         <textarea name="Message" class="input-field" rows="2" placeholder="Tell us more about your vision..."></textarea>
                     </div>
 
